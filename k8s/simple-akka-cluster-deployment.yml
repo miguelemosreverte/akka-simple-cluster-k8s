@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: simple-cluster
 spec:
-  replicas: 5
+  replicas: 3
   selector:
     matchLabels:
       app: akka-simple-cluster
@@ -17,31 +17,46 @@ spec:
       labels:
         app: akka-simple-cluster
     spec:
+      terminationGracePeriodSeconds: 30
+      restartPolicy: Always
       serviceAccountName: akka-simple-cluster
       containers:
-      - image: softwaremill/akka-simple-cluster-k8s:0.0.1-SNAPSHOT
-        imagePullPolicy: IfNotPresent
-        name: akka-simple-cluster
-        env:
-          - name: HOSTNAME
-            valueFrom:
-              fieldRef:
-                apiVersion: v1
-                fieldPath: status.podIP
-        ports:
-        - name: remoting
-          containerPort: 2551
-        - name: api
-          containerPort: 8080
-        - name: management
-          containerPort: 8558
-        readinessProbe:
-          tcpSocket:
-            port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        livenessProbe:
-          tcpSocket:
-            port: 8080
-          initialDelaySeconds: 15
-          periodSeconds: 20
+        - image: softwaremill/akka-simple-cluster-k8s:0.0.1-SNAPSHOT
+          imagePullPolicy: IfNotPresent
+          name: akka-simple-cluster
+          env:
+            - name: HOSTNAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.podIP
+          ports:
+            - name: remoting
+              containerPort: 2551
+            - name: api
+              containerPort: 8080
+            - name: management
+              containerPort: 8558
+          #health
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: management
+            initialDelaySeconds: 30
+          livenessProbe:
+            httpGet:
+              path: /alive
+              port: management
+            initialDelaySeconds: 30
+          #health
+          lifecycle:
+            preStop:
+              exec:
+                command: ["sleep", "30"]
+          resources:
+            requests:
+              cpu: 2
+              memory: 3G
+            limits:
+              cpu: 2
+              memory: 3G
