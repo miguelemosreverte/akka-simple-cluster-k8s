@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.cluster.Cluster
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
-import akka.management.AkkaManagement
+import akka.management.scaladsl.AkkaManagement
 import akka.management.cluster.bootstrap.ClusterBootstrap
 import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
@@ -34,7 +34,7 @@ object Main extends App {
 
   private def exitSystemOnTerminate(actorSystem: ActorSystem): Unit = {
 
-    implicit val dispatcher: ExecutionContextExecutor = actorSystem.dispatcher
+    //implicit val dispatcher: ExecutionContextExecutor = actorSystem.dispatcher
     val cluster = Cluster.get(actorSystem)
 
     cluster.registerOnMemberRemoved {
