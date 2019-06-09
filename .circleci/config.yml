@@ -15,20 +15,20 @@ orbs:
         orbs:
             codecov: codecov/codecov@1.0.5
             executors:
-            scala:
-                parameters:
-                version:
-                    type: string
-                    default: 2.12.8
-                sndimage:
-                    type: string
-                    default: ""
-                docker:
-                - image: circleci/openjdk:8-jdk
-                working_directory: ~/repo
-                environment:
-                JVM_OPTS: -Xmx3200m
-                TERM: dumb
+                scala:
+                    parameters:
+                    version:
+                        type: string
+                        default: 2.12.8
+                    sndimage:
+                        type: string
+                        default: ""
+                    docker:
+                    - image: circleci/openjdk:8-jdk
+                    working_directory: ~/repo
+                    environment:
+                    JVM_OPTS: -Xmx3200m
+                    TERM: dumb
             jobs:
                 test:
                     parameters:
