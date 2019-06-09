@@ -3,7 +3,7 @@ version: 2
 workflows:
   build-test:
     jobs:
-    build:
+      build:
         docker:
         - image: circleci/openjdk:8-jdk
         steps:
