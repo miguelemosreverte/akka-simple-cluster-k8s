@@ -32,9 +32,9 @@ orbs:
             jobs:
                 test:
                     parameters:
-                    executor:
-                        type: executor
-                        default: scala
+                        executor:
+                            type: executor
+                            default: scala
                     executor: << parameters.executor >>
                     steps:
                     - checkout
@@ -54,9 +54,9 @@ orbs:
                         file: target/scala-2.12/coverage-report/cobertura.xml
                 release:
                     parameters:
-                    executor:
-                        type: executor
-                        default: scala
+                        executor:
+                            type: executor
+                            default: scala
                     executor: << parameters.executor >>
                     steps:
                     - checkout
