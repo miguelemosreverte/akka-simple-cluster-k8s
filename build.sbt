@@ -29,5 +29,8 @@ libraryDependencies ++=Seq(
 
 libraryDependencies += "com.twitter" %% "chill-akka" % "0.9.3" // for kryo
 
+libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.5"
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
+
 dockerBaseImage := "openjdk:8"
 dockerUsername := Some("softwaremill")
