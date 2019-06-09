@@ -6,6 +6,7 @@ workflows:
   build-test-deploy:
     jobs:
       - sbt/test
+      - sbt/release
 
 # orbs:
 #   sbt: jcouyang/sbt@0.2.0
