@@ -53,10 +53,3 @@ spec:
             preStop:
               exec:
                 command: ["sleep", "30"]
-          resources:
-            requests:
-              cpu: 2
-              memory: 3G
-            limits:
-              cpu: 2
-              memory: 3G
