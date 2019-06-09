@@ -1,71 +1,77 @@
-version: 2.1
 
+version: 2.1
 description: Scala sbt pipeline
 
-
 workflows:
-    "Hello Workflow":
-        jobs:
-          - sbt/test
+  build-test-deploy:
+    jobs:
+      - sbt/test
 
-
+# orbs:
+#   sbt: jcouyang/sbt@0.2.0
 
 orbs:
-    sbt:
-        orbs:
-            codecov: codecov/codecov@1.0.5
-            executors:
-                scala:
-                    parameters:
-                        version:
-                            type: string
-                            default: 2.12.8
-                        sndimage:
-                            type: string
-                            default: ""
-                        docker:
-                            - image: circleci/openjdk:8-jdk
-                        working_directory: ~/repo
-                        environment:
-                            JVM_OPTS: -Xmx3200m
-                            TERM: dumb
-            jobs:
-                test:
-                    parameters:
-                        executor:
-                            type: executor
-                            default: scala
-                    executor: << parameters.executor >>
-                    steps:
-                        - checkout
-                        - restore_cache:
-                            keys:
-                                - v1-dependencies-{{ checksum "build.sbt" }}
-                                - v1-dependencies-
-                        - run: cat /dev/null | sbt test:compile
-                        - save_cache:
-                            paths:
-                                - ~/.ivy2
-                            key: v1-dependencies--{{ checksum "build.sbt" }}
-                        - run: sbt coverage test:test coverageReport
-                        - store_test_results:
-                            path: target
-                        - codecov/upload:
-                            file: target/scala-2.12/coverage-report/cobertura.xml
-                release:
-                    parameters:
-                        executor:
-                            type: executor
-                            default: scala
-                    executor: << parameters.executor >>
-                    steps:
-                        - checkout
-                        - restore_cache:
-                            keys:
-                                - v1-dependencies-{{ checksum "build.sbt" }}
-                                - v1-dependencies-
-                        - run: |
-                            mkdir -p .gnupg
-                            echo $GPG_SEC | base64 --decode > .gnupg/secring.asc
-                            echo $GPG_PUB | base64 --decode > .gnupg/pubring.asc
-                            sbt releaseEarly
+  sbt:
+    orbs:
+      codecov: codecov/codecov@1.0.5 
+      # codecov: codecov/codecov@1.0.2 https://github.com/codecov/codecov-circleci-orb/issues/12
+    executors:
+      scala:
+        parameters:
+          version:
+            type: string
+            default: 2.12.8
+          sndimage:
+            type: string
+            default: ""
+        docker:
+          - image: circleci/openjdk:8-jdk
+        working_directory: ~/repo
+        environment:
+          JVM_OPTS: -Xmx3200m
+          TERM: dumb
+    commands:
+      dospecialthings:
+        steps:
+          - run: echo "We will now do special things"
+    jobs:
+      test:
+        parameters:
+          executor:
+            type: executor
+            default: scala
+        executor: << parameters.executor >>
+        steps:
+          - checkout
+          - restore_cache:
+              keys:
+                - v1-dependencies-{{ checksum "build.sbt" }}
+                - v1-dependencies-
+          - run: cat /dev/null | sbt test:compile
+          - save_cache:
+              paths:
+                - ~/.ivy2
+              key: v1-dependencies--{{ checksum "build.sbt" }}
+          - run: sbt coverage test:test coverageReport
+          - store_test_results:
+              path: target
+          - codecov/upload:
+              file: target/scala-2.12/coverage-report/cobertura.xml
+      release:
+        parameters:
+          executor:
+            type: executor
+            default: scala
+        executor: << parameters.executor >>
+        steps:
+          - checkout
+          - restore_cache:
+              keys:
+                - v1-dependencies-{{ checksum "build.sbt" }}
+                - v1-dependencies-
+          - run: |
+              mkdir -p .gnupg
+              echo $GPG_SEC | base64 --decode > .gnupg/secring.asc
+              echo $GPG_PUB | base64 --decode > .gnupg/pubring.asc
+              sbt releaseEarly
+
